@@ -1,20 +1,31 @@
-FROM registry.access.redhat.com/ubi8/ubi
-RUN yum -y install java-1.8.0-openjdk
-
+FROM registry.fedoraproject.org/fedora:33
+#RUN yum -y install java-1.8.0-openjdk
 ENV MONGO_DB="sling"
 ENV REPOSITORY="sling/repository"
 ENV KARAF_DEBUG=true
 RUN mkdir -p /opt/pantheon-karaf-dist
-RUN mkdir /tmp/archive
-WORKDIR /tmp/archive
 
-COPY ../pantheon-karaf-dist/target/pantheon-karaf-dist-*.tar.gz /tmp/archive/pantheon-karaf-dist.tar.gz
+RUN dnf install -y --best\
+    --setopt=install_weak_deps=False \
+    java-1.8.0-openjdk-devel \
+    glibc-langpack-en \
+    which \
+    procps-ng \
+    golang
 
-RUN tar --strip-components=1 -C /opt/pantheon-karaf-dist -xzf pantheon-karaf-dist.tar.gz; \
-    rm -rf /tmp/*
+ENV LANG=en_US.UTF-8
+
+RUN mkdir /build
+COPY . /build
+WORKDIR /build
+
+RUN chmod +x scripts/deploy_local.sh
+RUN PANTHEON_CODEBASE=/build scripts/deploy_local.sh
+
+RUN tar --strip-components=1 -C /opt/pantheon-karaf-dist -xzf /build/pantheon-karaf-dist/target/pantheon-karaf-dist-*.tar.gz
 
 RUN chmod 755 /opt; 
-    #sed -i "21s/out/stdout/" /opt/pantheon-karaf-dist/etc/org.ops4j.pax.logging.cfg;
+#sed -i "21s/out/stdout/" /opt/pantheon-karaf-dist/etc/org.ops4j.pax.logging.cfg;
 
 # expose JMX HTTP DEBUG ports
 EXPOSE 1099 8181 5005

@@ -22,6 +22,6 @@ set -e
 # build the distribution
 # build the karaf-features and karaf-config along with pantheon modules
 ./mvnw clean install -U -pl sling-org-apache-sling-karaf-features,sling-org-apache-sling-karaf-configs,pantheon-bundle,pantheon-karaf-feature,pantheon-karaf-dist
-pantheon-karaf-dist/target/assembly/bin/karaf
+#pantheon-karaf-dist/target/assembly/bin/karaf
 set +e
 
