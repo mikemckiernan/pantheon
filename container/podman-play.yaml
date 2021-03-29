@@ -31,7 +31,7 @@ spec:
       value: -Dsling.run.modes=oak_mongo -Doak.mongo.uri=mongodb://localhost:27017
     - name: LANG
       value: C.UTF-8
-    image: docker.io/apache/sling:latest
+    image: docker.io/apache/sling@sha256:3a22d3eb91ccaa267333eaa605d2fae7d38b44f4db77d64e93cded5f5c4610ce
     name: sling
     ports:
     - containerPort: 5005
@@ -56,7 +56,7 @@ spec:
       value: xterm
     - name: HOSTNAME
       value: pantheon
-    image: docker.io/library/mongo:latest
+    image: docker.io/library/mongo:4.4.4
     name: slingmongo
     resources: {}
     securityContext:
@@ -66,7 +66,7 @@ spec:
       readOnlyRootFilesystem: false
     workingDir: /
   - name: pantheon-app
-    image: localhost/pantheon:0.1.0
+    image: localhost/pantheon:0.1.1
     env:
     - name: KARAF_DEBUG
       value: true
@@ -78,6 +78,8 @@ spec:
       value: "mongodb://localhost:27017"
     - name: MONGO_DB_REPLICA
       value: "mongodb://localhost:27017"
+    - name: SYNC_SERVICE_URL
+      value: "http://localhost:9666"
     resources: {}
     command: 
     - /opt/pantheon-karaf-dist/bin/karaf
@@ -85,6 +87,12 @@ spec:
     ports:
     - containerPort: 8181 
       hostPort:  8181
+      protocol: TCP
+  - name: git2pantheon
+    image: localhost/git2pantheon:0.1.1
+    ports:
+    - containerPort: 9666
+      hostPort:  9666
       protocol: TCP
 status: {}
 
